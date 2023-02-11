@@ -3,7 +3,14 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+          Resource: "*"
 
 functions:
   hello:
@@ -11,4 +18,20 @@ functions:
     events:
       - httpApi:
           path: /hello
-          method: get
+          method: post
+          
+resources:
+    Resources:
+      usersTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: Josh-Hackathon-Table
+          AttributeDefinitions:
+            - AttributeName: name
+              AttributeType: S
+          KeySchema:
+            - AttributeName: name
+              KeyType: HASH
+          ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
